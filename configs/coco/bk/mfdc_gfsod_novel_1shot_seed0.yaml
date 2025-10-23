@@ -1,0 +1,41 @@
+_BASE_: "../Base-RCNN.yaml"
+MODEL:
+  WEIGHTS: "/root/emtk/checkpoints/coco/base/model_reset_surgery.pth"
+  # WEIGHTS: "/root/emtk/checkpoints/coco/emtk_gfsod_novel/tfa-like/1shot_seed0/inference/iter_0000799.json"
+  MASK_ON: False
+  BACKBONE:
+    FREEZE: False
+  RESNETS:
+    DEPTH: 101
+  RPN:
+    ENABLE_DECOUPLE: True
+    BACKWARD_SCALE: 0.0
+    FREEZE: False
+  ROI_HEADS:
+    NUM_CLASSES: 80
+    FREEZE_FEAT: True
+    CLS_DROPOUT: True
+    ENABLE_DECOUPLE: True
+    BACKWARD_SCALE: 0.01
+    NAME: "CommonalityROIHeads"
+    OUTPUT_LAYER: "DoubleFastRCNNOutputLayers"
+    MEMORY: True
+    AUGMENTATION: True
+    SEMANTIC: True
+    WARMUP_DISTILL: 1000
+DATASETS:
+  TRAIN: ("removecoco14_trainval_all_1shot_seed0", )
+  TEST: ('coco14_test_all',)
+  TWO_STREAM: True
+SOLVER:
+  IMS_PER_BATCH: 4
+  BASE_LR: 0.005
+  STEPS: (2800,)
+  MAX_ITER: 3700 #3200
+  CHECKPOINT_PERIOD: 60
+  WARMUP_ITERS: 0
+TEST:
+  PCB_ENABLE: True
+  PCB_MODELPATH: "/root/emtk/checkpoints/ImageNetPretrained/torchvision/resnet101-5d3b4d8f.pth"
+  EVAL_PERIOD: 8000
+OUTPUT_DIR: "/root/emtk/checkpoints/coco/emtk_gfsod_novel/tfa-like/1shot_seed0"
